@@ -8,11 +8,14 @@ import (
 )
 
 func strToInt(s string) int {
-	i, err := strconv.Atoi(s)
-	if err != nil {
-		panic(err)
+	if s != "" {
+		i, err := strconv.Atoi(s)
+		if err != nil {
+			panic(err)
+		}
+		return i
 	}
-	return i
+	return 0
 }
 
 func blueCheck(count int) bool {
@@ -50,36 +53,33 @@ func main() {
 	var currentColour string
 	var cubeCount int
 	for _, colours := range matches {
-		fmt.Println(colours)
 		for _, colour := range colours {
 			if colourMatcher.MatchString(colour) {
 				current := colourMatcher.FindAllStringSubmatch(colour, -1)
 				currentColour = current[0][1]
 			}
-			if colour != "" {
-				if justDigit.MatchString(colour) {
-					cubeCount = strToInt(colour)
-					// if currentColour == "blue" {
-					// 	if !blueCheck(cubeCount) {
-					// 		fmt.Println(currentColour)
-					// 		fmt.Println("IMPOSSIBLE")
-					// 	}
-					// }
-					// if currentColour == "red" {
-					// 	if !redCheck(cubeCount) {
-					// 		fmt.Println(currentColour)
-					// 		fmt.Println("IMPOSSIBLE")
-					// 	}
-					// }
-					// if currentColour == "green" {
-					// 	if !greenCheck(cubeCount) {
-					// 		fmt.Println(currentColour)
-					// 		fmt.Println("IMPOSSIBLE")
-					// 	}
-					// }
-					fmt.Println(currentColour)
-					fmt.Println(cubeCount)
+			if justDigit.MatchString(colour) {
+				cubeCount = strToInt(colour)
+				if currentColour == "blue" {
+					if !blueCheck(cubeCount) {
+						fmt.Println(currentColour)
+						fmt.Println("IMPOSSIBLE")
+					}
 				}
+				if currentColour == "red" {
+					if !redCheck(cubeCount) {
+						fmt.Println(currentColour)
+						fmt.Println("IMPOSSIBLE")
+					}
+				}
+				if currentColour == "green" {
+					if !greenCheck(cubeCount) {
+						fmt.Println(currentColour)
+						fmt.Println("IMPOSSIBLE")
+					}
+				}
+				fmt.Println(currentColour)
+				fmt.Println(cubeCount)
 			}
 		}
 	}
