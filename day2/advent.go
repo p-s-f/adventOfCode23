@@ -20,15 +20,15 @@ func main() {
 			score, _ := strconv.Atoi(match[1])
 			switch match[2] {
 			case "red":
-				if score <= 12 {
+				if score >= 12 {
 					possible = false
 				}
 			case "green":
-				if score <= 13 {
+				if score >= 13 {
 					possible = false
 				}
 			case "blue":
-				if score <= 14 {
+				if score >= 14 {
 					possible = false
 				}
 			}
@@ -40,7 +40,9 @@ func main() {
 		}
 		fmt.Printf("Possible game %v\n", possible)
 		if possible {
-			gameCount += gameNumber
+			fmt.Printf("gamecount %d\n", gameCount)
+			gameCount += (gameNumber + 1)
+			fmt.Printf("as was possible gamenumber %d added to gamecount = %d\n", (gameNumber + 1), gameCount)
 		}
 	}
 	fmt.Println(gameCount)
