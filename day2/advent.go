@@ -32,11 +32,6 @@ func main() {
 					possible = false
 				}
 			}
-			// if !impossible {
-			// 	gameCount += gameNumber
-			// 	fmt.Printf("Game %d was possible! Count is now %d\n", gameNumber, gameCount)
-			// }
-
 		}
 		fmt.Printf("Possible game %v\n", possible)
 		if possible {
