@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"regexp"
+	"strings"
 )
 
 func lineCounter(r io.Reader) (int, error) {
@@ -87,4 +88,24 @@ func main() {
 		lineCount++
 	}
 
+	fmt.Println("ALTERNATIVELY")
+	input, _ := os.ReadFile(os.Args[1:][0])
+
+	inputAsSlice := strings.Split(strings.TrimSpace(string(input)), "\n")
+	fmt.Println(inputAsSlice)
+
+	lineCount = 0
+	for lineCount < numlines {
+		// fmt.Println("********************")
+		if lineCount > 0 {
+			fmt.Println(inputAsSlice[lineCount-1])
+		}
+		fmt.Println(inputAsSlice[lineCount])
+
+		if lineCount <= numlines {
+			fmt.Println(inputAsSlice[lineCount+1])
+		}
+		fmt.Println("********************")
+		lineCount++
+	}
 }
