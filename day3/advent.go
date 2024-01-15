@@ -69,15 +69,19 @@ func main() {
 		fmt.Printf("Line %d: \"%s\"\n", lineCount+1, nextLine)
 
 		re := regexp.MustCompile(`(\d+)`)
-		var indexes [](int)
-		for i, match := range re.FindAllStringSubmatchIndex(nextLine, -1) {
-			// indexes[i] = match[0]
-			fmt.Printf("Found match %d is %d\n", i+1, match[0])
+		var numbers [](string)
+		numbers = make([]string, 2)
+		for i, match := range re.FindAllStringSubmatch(nextLine, -1) {
+			// fmt.Printf("Found match %d is %s\n", i+1, match[0])
+			numbers[i] = match[0]
 		}
 
-		for i := range indexes {
-			fmt.Printf("Index %d", i)
+		for i, match := range re.FindAllStringSubmatchIndex(nextLine, -1) {
+			// fmt.Printf("Found match %d is %d\n", i+1, match[0])
+			numbers[i] = fmt.Sprintf("Found %s has string index %d and is length %d\n", numbers[i], match[0], len(numbers[i]))
 		}
+
+		fmt.Println(numbers)
 
 		fmt.Printf("\n******************\n")
 		lineCount++
