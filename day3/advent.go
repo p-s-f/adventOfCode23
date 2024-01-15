@@ -103,7 +103,22 @@ func main() {
 
 		fmt.Printf("LINE TO ANALYSE: %s\n", inputAsSlice[lineCount])
 
-		if lineCount < numlines {
+		re := regexp.MustCompile(`(\d+)`)
+		var numbers [](string)
+		numbers = make([]string, 2)
+		for i, match := range re.FindAllStringSubmatch(inputAsSlice[lineCount], -1) {
+			// fmt.Printf("Found match %d is %s\n", i+1, match[0])
+			numbers[i] = match[0]
+		}
+
+		for i, match := range re.FindAllStringSubmatchIndex(inputAsSlice[lineCount], -1) {
+			// fmt.Printf("Found match %d is %d\n", i+1, match[0])
+			numbers[i] = fmt.Sprintf("Found %s has string index %d and is length %d\n", numbers[i], match[0], len(numbers[i]))
+		}
+
+		fmt.Println(numbers)
+
+		if lineCount < numlines-1 {
 			fmt.Printf("LINE BELOW: %s\n", inputAsSlice[lineCount+1])
 		}
 		fmt.Println("********************")
