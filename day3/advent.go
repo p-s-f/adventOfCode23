@@ -98,12 +98,13 @@ func main() {
 	for lineCount < numlines {
 		// fmt.Println("********************")
 		if lineCount > 0 {
-			fmt.Println(inputAsSlice[lineCount-1])
+			fmt.Printf("\nLINE ABOVE: %s\n", inputAsSlice[lineCount-1])
 		}
-		fmt.Println(inputAsSlice[lineCount])
 
-		if lineCount <= numlines {
-			fmt.Println(inputAsSlice[lineCount+1])
+		fmt.Printf("LINE TO ANALYSE: %s\n", inputAsSlice[lineCount])
+
+		if lineCount < numlines {
+			fmt.Printf("LINE BELOW: %s\n", inputAsSlice[lineCount+1])
 		}
 		fmt.Println("********************")
 		lineCount++
