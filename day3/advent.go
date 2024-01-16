@@ -14,8 +14,9 @@ func checkLine(numbers [][]int, lineToCheck string, partNumber int, validPartCou
 	if numbers[partNumber][2] > 0 {
 		left = numbers[partNumber][2] - 1
 	}
-	if numbers[partNumber][2]+numbers[partNumber][1] > len(lineToCheck) {
-		right = len(lineToCheck)
+
+	if numbers[partNumber][2]+numbers[partNumber][1] == (len(lineToCheck) - 1) {
+		right = len(lineToCheck) - 1
 	} else {
 		right = numbers[partNumber][2] + (numbers[partNumber][1] + 1)
 	}
@@ -27,9 +28,7 @@ func checkLine(numbers [][]int, lineToCheck string, partNumber int, validPartCou
 		charToCheck := subString[charCount : charCount+1]
 		if _, err := strconv.Atoi(charToCheck); err != nil {
 			if charToCheck != "." {
-				// adjacentSymbol = true
 				partNumberToAdd = numbers[partNumber][0]
-				fmt.Printf("Adding part number %d as is adjacent to %v\n", partNumberToAdd, charToCheck)
 			}
 		}
 		charCount++
