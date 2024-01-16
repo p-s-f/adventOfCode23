@@ -8,6 +8,35 @@ import (
 	"strings"
 )
 
+func checkLine(numbers [][]int, lineToCheck string, partNumber int, validPartCount int) int {
+	var left, right, partNumberToAdd int
+
+	if numbers[partNumber][2] > 0 {
+		left = numbers[partNumber][2] - 1
+	}
+	if numbers[partNumber][2]+numbers[partNumber][1] > len(lineToCheck) {
+		right = len(lineToCheck)
+	} else {
+		right = numbers[partNumber][2] + (numbers[partNumber][1] + 1)
+	}
+
+	subString := lineToCheck[left:right]
+	charCount := 0
+
+	for charCount < len(subString) {
+		charToCheck := subString[charCount : charCount+1]
+		if _, err := strconv.Atoi(charToCheck); err != nil {
+			if charToCheck != "." {
+				// adjacentSymbol = true
+				partNumberToAdd = numbers[partNumber][0]
+				fmt.Printf("Adding part number %d as is adjacent to %v\n", partNumberToAdd, charToCheck)
+			}
+		}
+		charCount++
+	}
+	return validPartCount + partNumberToAdd
+}
+
 func main() {
 	input, _ := os.ReadFile(os.Args[1:][0])
 
@@ -21,11 +50,13 @@ func main() {
 	for lineCount < numLines {
 		re := regexp.MustCompile(`(\d+)`)
 		numbers := make([][]int, 20)
-		partNumberToAdd := 0
+		foundPartNumbers := 0
 
 		// Find all part numbers in this line adn add to numbers slice the value of the part number and the length of number in digits
 		for i, match := range re.FindAllStringSubmatch(inputAsSlice[lineCount], -1) {
 			partNumber, _ := strconv.Atoi(match[0])
+			foundPartNumbers++
+			numbers[i] = make([]int, 3)
 			numbers[i][0] = partNumber
 			numbers[i][1] = len(match[0])
 		}
@@ -34,6 +65,7 @@ func main() {
 		for i, match := range re.FindAllStringSubmatchIndex(inputAsSlice[lineCount], -1) {
 			numbers[i][2] = match[0]
 		}
+
 		// numbers is now e.g
 		/*
 			    line = "...123....45...%.."
@@ -44,40 +76,24 @@ func main() {
 				numbers[1][1] = 2
 				numbers[1][2] = 10
 		*/
+
 		i := 0
-		for i <= len(numbers) {
-			adjacentSymbol := false
+		for i < foundPartNumbers {
 
 			if lineCount > 0 {
-				for charToCheck := range inputAsSlice[lineCount-1][numbers[i][2]-1 : numbers[i][2]+numbers[i][1]] {
-					if charToCheck != '.' {
-						adjacentSymbol = true
-						partNumberToAdd = numbers[i][0]
-					}
-				}
+				vaildPartCount = checkLine(numbers, inputAsSlice[lineCount-1], i, vaildPartCount)
 			}
 
-			for charToCheck := range inputAsSlice[lineCount][numbers[i][2]-1 : numbers[i][2]+numbers[i][1]] {
-				if charToCheck != '.' {
-					adjacentSymbol = true
-					partNumberToAdd = numbers[i][0]
-				}
-			}
+			vaildPartCount = checkLine(numbers, inputAsSlice[lineCount], i, vaildPartCount)
 
 			if lineCount < numLines-1 {
-				for charToCheck := range inputAsSlice[lineCount+1][numbers[i][2]-1 : numbers[i][2]+numbers[i][1]] {
-					if charToCheck != '.' {
-						adjacentSymbol = true
-						partNumberToAdd = numbers[i][0]
-					}
-				}
+				vaildPartCount = checkLine(numbers, inputAsSlice[lineCount+1], i, vaildPartCount)
 			}
-			if adjacentSymbol {
-				vaildPartCount += partNumberToAdd
-			}
-		}
 
+			i++
+		}
 		lineCount++
 	}
+
 	fmt.Println(vaildPartCount)
 }
