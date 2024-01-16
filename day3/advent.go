@@ -1,127 +1,83 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
 	"fmt"
-	"io"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
-func lineCounter(r io.Reader) (int, error) {
-	buf := make([]byte, 32*1024)
-	count := 0
-	lineSep := []byte{'\n'}
-
-	for {
-		c, err := r.Read(buf)
-		count += bytes.Count(buf[:c], lineSep)
-
-		switch {
-		case err == io.EOF:
-			return count, nil
-
-		case err != nil:
-			return count, err
-		}
-	}
-}
-
-func ReadLine(r io.Reader, lineNum int) (line string, lastLine int, err error) {
-	sc := bufio.NewScanner(r)
-	for sc.Scan() {
-		lastLine++
-		if lastLine == lineNum {
-			// you can return sc.Bytes() if you need output in []bytes
-			return sc.Text(), lastLine, sc.Err()
-		}
-	}
-	return line, lastLine, io.EOF
-}
-
 func main() {
-	// read input text file for processing as arg[0]
-	argsWithoutProg := os.Args[1:]
-	f, _ := os.Open(argsWithoutProg[0])
-	numlines, _ := lineCounter(f)
-	f, _ = os.Open(argsWithoutProg[0])
-	line3, _, _ := ReadLine(f, 3)
-	fmt.Printf("There are %d lines in input file\n", numlines)
-	fmt.Printf("And line 3 is \"%s\"\n", line3)
-	lineCount := 1
-	for lineCount <= numlines {
-		// f, _ = os.Open(argsWithoutProg[0])
-		// currentLine, _, _ := ReadLine(f, lineCount)
-		// fmt.Printf("Line %d: \"%s\"\n", lineCount, currentLine)
-		// lineCount++
-
-		f, _ = os.Open(argsWithoutProg[0])
-		prevLine, _, _ := ReadLine(f, lineCount-1)
-		fmt.Printf("Line %d: \"%s\"\n", lineCount-1, prevLine)
-
-		f, _ = os.Open(argsWithoutProg[0])
-		currentLine, _, _ := ReadLine(f, lineCount)
-		fmt.Printf("Line %d: \"%s\"\n", lineCount, currentLine)
-
-		f, _ = os.Open(argsWithoutProg[0])
-		nextLine, _, _ := ReadLine(f, lineCount+1)
-		fmt.Printf("Line %d: \"%s\"\n", lineCount+1, nextLine)
-
-		re := regexp.MustCompile(`(\d+)`)
-		var numbers [](string)
-		numbers = make([]string, 2)
-		for i, match := range re.FindAllStringSubmatch(nextLine, -1) {
-			// fmt.Printf("Found match %d is %s\n", i+1, match[0])
-			numbers[i] = match[0]
-		}
-
-		for i, match := range re.FindAllStringSubmatchIndex(nextLine, -1) {
-			// fmt.Printf("Found match %d is %d\n", i+1, match[0])
-			numbers[i] = fmt.Sprintf("Found %s has string index %d and is length %d\n", numbers[i], match[0], len(numbers[i]))
-		}
-
-		fmt.Println(numbers)
-
-		fmt.Printf("\n******************\n")
-		lineCount++
-	}
-
-	fmt.Println("ALTERNATIVELY")
 	input, _ := os.ReadFile(os.Args[1:][0])
 
 	inputAsSlice := strings.Split(strings.TrimSpace(string(input)), "\n")
 	fmt.Println(inputAsSlice)
 
-	lineCount = 0
-	for lineCount < numlines {
-		// fmt.Println("********************")
-		if lineCount > 0 {
-			fmt.Printf("\nLINE ABOVE: %s\n", inputAsSlice[lineCount-1])
-		}
+	lineCount := 0
+	vaildPartCount := 0
+	numLines := len(inputAsSlice)
 
-		fmt.Printf("LINE TO ANALYSE: %s\n", inputAsSlice[lineCount])
-
+	for lineCount < numLines {
 		re := regexp.MustCompile(`(\d+)`)
-		var numbers [](string)
-		numbers = make([]string, 2)
+		numbers := make([][]int, 20)
+		partNumberToAdd := 0
+
+		// Find all part numbers in this line adn add to numbers slice the value of the part number and the length of number in digits
 		for i, match := range re.FindAllStringSubmatch(inputAsSlice[lineCount], -1) {
-			// fmt.Printf("Found match %d is %s\n", i+1, match[0])
-			numbers[i] = match[0]
+			partNumber, _ := strconv.Atoi(match[0])
+			numbers[i][0] = partNumber
+			numbers[i][1] = len(match[0])
 		}
 
+		// Find the string index position of each part number and add to numbers slice
 		for i, match := range re.FindAllStringSubmatchIndex(inputAsSlice[lineCount], -1) {
-			// fmt.Printf("Found match %d is %d\n", i+1, match[0])
-			numbers[i] = fmt.Sprintf("Found %s has string index %d and is length %d\n", numbers[i], match[0], len(numbers[i]))
+			numbers[i][2] = match[0]
+		}
+		// numbers is now e.g
+		/*
+			    line = "...123....45...%.."
+				numbers[0][0] = 123 // the part number itself
+				numbers[0][1] = 3 // length of part number in digits
+				numbers[0][2] = 3 // position of part number in line as string index
+				numbers[1][0] = 456
+				numbers[1][1] = 2
+				numbers[1][2] = 10
+		*/
+		i := 0
+		for i <= len(numbers) {
+			adjacentSymbol := false
+
+			if lineCount > 0 {
+				for charToCheck := range inputAsSlice[lineCount-1][numbers[i][2]-1 : numbers[i][2]+numbers[i][1]] {
+					if charToCheck != '.' {
+						adjacentSymbol = true
+						partNumberToAdd = numbers[i][0]
+					}
+				}
+			}
+
+			for charToCheck := range inputAsSlice[lineCount][numbers[i][2]-1 : numbers[i][2]+numbers[i][1]] {
+				if charToCheck != '.' {
+					adjacentSymbol = true
+					partNumberToAdd = numbers[i][0]
+				}
+			}
+
+			if lineCount < numLines-1 {
+				for charToCheck := range inputAsSlice[lineCount+1][numbers[i][2]-1 : numbers[i][2]+numbers[i][1]] {
+					if charToCheck != '.' {
+						adjacentSymbol = true
+						partNumberToAdd = numbers[i][0]
+					}
+				}
+			}
+			if adjacentSymbol {
+				vaildPartCount += partNumberToAdd
+			}
 		}
 
-		fmt.Println(numbers)
-
-		if lineCount < numlines-1 {
-			fmt.Printf("LINE BELOW: %s\n", inputAsSlice[lineCount+1])
-		}
-		fmt.Println("********************")
 		lineCount++
 	}
+	fmt.Println(vaildPartCount)
 }
