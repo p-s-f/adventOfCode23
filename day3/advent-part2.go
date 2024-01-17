@@ -51,9 +51,9 @@ func main() {
 	lineCount := 0
 	vaildPartCount := 0
 	numLines := len(inputAsSlice)
-	symbolIndex := make([][]int, 100000)
+	symbolIndex := make([][]int, numLines)
 	for i := range symbolIndex {
-		symbolIndex[i] = make([]int, 10000)
+		symbolIndex[i] = make([]int, len(inputAsSlice[1]))
 	}
 	for lineCount < numLines {
 		re := regexp.MustCompile(`(\d+)`)
