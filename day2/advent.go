@@ -33,7 +33,7 @@ func main() {
 				}
 			}
 		}
-		if minRed <= 12 && minGreen <= 13 && minBlue <= 14 {
+		if minRed <= 12 && minGreen <= 13 && minBlue <= 14 { //thanks to https://github.com/mnml very neat!
 			gameCount += gameNumber + 1
 		}
 		power += minRed * minBlue * minGreen
